@@ -1,0 +1,26 @@
+{
+  "name": "portafolio-una",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Portafolio académico UNA — Curso Introductorio (Cód. 000, Lapso 2026-2) | Gabriel Alejandro Piña Martínez",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "^5.2.5",
+    "@fontsource-variable/jetbrains-mono": "^5.2.5",
+    "@tailwindcss/typography": "^0.5.16",
+    "@tailwindcss/vite": "^4.1.0",
+    "astro": "^5.5.0",
+    "tailwindcss": "^4.1.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "typescript": "^5.8.2"
+  }
+}

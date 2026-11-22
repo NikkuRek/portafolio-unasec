@@ -1,0 +1,119 @@
+---
+import { AUTHOR_PROFILE, PRIMARY_NAVIGATION } from '../../data/portfolio';
+
+interface Props {
+  currentPath: string;
+}
+
+const { currentPath } = Astro.props;
+---
+
+<header class="bg-surface border-b border-border-hairline">
+  <div class="max-w-site mx-auto px-4 md:px-8">
+    <!-- Banda superior: Identidad + Modo lectura -->
+    <div class="py-4 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex flex-col min-w-0">
+        <a
+          href="/"
+          class="text-base md:text-lg font-semibold tracking-tight text-ink-primary no-underline hover:text-accent leading-snug"
+        >
+          {AUTHOR_PROFILE.fullName}
+        </a>
+        <p class="font-mono text-xs text-ink-muted">
+          {AUTHOR_PROFILE.university.acronym} · {AUTHOR_PROFILE.course.code} · {AUTHOR_PROFILE.targetProgram.code}
+        </p>
+      </div>
+
+      <button
+        id="reading-mode-toggle"
+        type="button"
+        aria-pressed="false"
+        title="Activa colores cálidos para cansar menos la vista"
+        class="inline-flex items-center gap-2 min-h-[44px] px-3.5 py-2 text-xs font-medium rounded-full border border-border-hairline bg-canvas text-ink-secondary hover:text-ink-primary hover:border-border-strong cursor-pointer transition-colors shrink-0"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          aria-hidden="true"
+          class="w-3.5 h-3.5 shrink-0 text-accent"
+        >
+          <path d="M10.75 16.82A7.462 7.462 0 0 1 15 15.5c.71 0 1.396.098 2.046.282A.75.75 0 0 0 18 15.06v-11a.75.75 0 0 0-.546-.721A9.006 9.006 0 0 0 15 3a8.963 8.963 0 0 0-4.25 1.065V16.82ZM9.25 4.065A8.963 8.963 0 0 0 5 3c-.85 0-1.673.118-2.454.339A.75.75 0 0 0 2 4.06v11a.75.75 0 0 0 .954.721A7.506 7.506 0 0 1 5 15.5c1.579 0 3.042.487 4.25 1.32V4.065Z" />
+        </svg>
+        <span id="reading-mode-label">Modo lectura</span>
+        <span
+          id="reading-mode-dot"
+          aria-hidden="true"
+          class="w-2 h-2 rounded-full bg-border-strong transition-colors"
+        ></span>
+      </button>
+    </div>
+
+    <!-- Banda inferior: Navegación editorial -->
+    <nav
+      aria-label="Navegación principal"
+      class="border-t border-border-hairline flex flex-wrap items-center gap-x-3.5 sm:gap-x-5 gap-y-0 -mb-px"
+    >
+      {PRIMARY_NAVIGATION.map((item) => {
+        const isActive =
+          !item.external &&
+          (currentPath === item.href || currentPath === `${item.href}/`);
+
+        return (
+          <a
+            href={item.href}
+            aria-current={isActive ? 'page' : undefined}
+            target={item.external ? '_blank' : undefined}
+            rel={item.external ? 'noopener noreferrer' : undefined}
+            class:list={[
+              'inline-flex items-center gap-1.5 min-h-[44px] py-2 text-xs sm:text-sm font-medium no-underline border-b-2 transition-colors',
+              item.external && 'sm:ml-auto',
+              isActive
+                ? 'border-accent text-accent'
+                : 'border-transparent text-ink-secondary hover:text-ink-primary hover:border-border-strong',
+            ]}
+          >
+            <span>{item.label}</span>
+          </a>
+        );
+      })}
+    </nav>
+  </div>
+</header>
+
+<script is:inline>
+  (() => {
+    const btn = document.getElementById('reading-mode-toggle');
+    const label = document.getElementById('reading-mode-label');
+    const dot = document.getElementById('reading-mode-dot');
+    if (!btn || !label || !dot) return;
+
+    const syncUI = (isOn) => {
+      btn.setAttribute('aria-pressed', isOn ? 'true' : 'false');
+      label.textContent = isOn ? 'Modo lectura activo' : 'Modo lectura';
+      btn.classList.toggle('bg-accent-subtle', isOn);
+      btn.classList.toggle('border-accent-border', isOn);
+      btn.classList.toggle('text-accent', isOn);
+      btn.classList.toggle('bg-canvas', !isOn);
+      btn.classList.toggle('border-border-hairline', !isOn);
+      btn.classList.toggle('text-ink-secondary', !isOn);
+      dot.classList.toggle('bg-accent', isOn);
+      dot.classList.toggle('bg-border-strong', !isOn);
+    };
+
+    syncUI(document.documentElement.getAttribute('data-reading-mode') === 'on');
+
+    btn.addEventListener('click', () => {
+      const next = document.documentElement.getAttribute('data-reading-mode') !== 'on';
+      if (next) {
+        document.documentElement.setAttribute('data-reading-mode', 'on');
+      } else {
+        document.documentElement.removeAttribute('data-reading-mode');
+      }
+      syncUI(next);
+      try {
+        localStorage.setItem('una-reading-mode', next ? 'on' : 'off');
+      } catch {}
+    });
+  })();
+</script>

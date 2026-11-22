@@ -1,0 +1,40 @@
+---
+export interface BreadcrumbItem {
+  readonly label: string;
+  readonly href?: string | undefined;
+}
+
+interface Props {
+  items: readonly BreadcrumbItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<nav aria-label="Ruta de navegación" class="mb-6">
+  <ol class="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-ink-muted font-mono">
+    {items.map((item, index) => {
+      const isLast = index === items.length - 1;
+      return (
+        <li class="inline-flex items-center gap-1.5 min-w-0">
+          {item.href && !isLast ? (
+            <a
+              href={item.href}
+              class="inline-flex items-center py-1 text-ink-secondary hover:text-accent no-underline hover:underline break-words"
+            >
+              {item.label}
+            </a>
+          ) : (
+            <span
+              aria-current={isLast ? 'page' : undefined}
+              class="py-1 text-ink-primary font-medium break-words"
+            >
+              {item.label}
+            </span>
+          )}
+          {!isLast && <span aria-hidden="true" class="text-border-strong">/</span>}
+        </li>
+      );
+    })}
+  </ol>
+</nav>

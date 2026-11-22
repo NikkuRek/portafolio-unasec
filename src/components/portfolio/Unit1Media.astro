@@ -1,0 +1,145 @@
+---
+interface InfographicData {
+  readonly title: string;
+  readonly src: string;
+  readonly width: number;
+  readonly height: number;
+  readonly driveUrl: string;
+  readonly alt: string;
+  readonly caption: string;
+}
+
+interface VideoData {
+  readonly title: string;
+  readonly src: string;
+  readonly poster: string;
+  readonly driveUrl: string;
+  readonly previewUrl: string;
+  readonly caption: string;
+}
+
+interface Props {
+  infographic: InfographicData;
+  video: VideoData;
+}
+
+const { infographic, video } = Astro.props;
+---
+
+<section aria-labelledby="heading-unidad-1-media" class="my-8 space-y-8 min-w-0">
+  <div class="border-b border-border-hairline pb-3">
+    <p class="font-mono text-xs uppercase tracking-wider text-accent font-medium">
+      Evidencias Multimedia · Unidad I (Primera Entrega)
+    </p>
+    <h2 id="heading-unidad-1-media" class="text-xl font-semibold text-ink-primary mt-1">
+      Infografía Institucional (Objetivo I.1) y Micro-Video (Objetivo I.2)
+    </h2>
+  </div>
+
+  <!-- Infografía (Objetivo I.1) -->
+  <figure id="infografia-u1" class="scroll-mt-6 min-w-0 bg-surface border border-border-hairline rounded-md p-4 md:p-6 space-y-4">
+    <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-border-hairline">
+      <div class="min-w-0">
+        <p class="font-mono text-xs uppercase tracking-wider text-accent font-medium">
+          Objetivo I.1 · Síntesis Visual
+        </p>
+        <h3 class="text-base md:text-lg font-semibold text-ink-primary mt-0.5">
+          {infographic.title}
+        </h3>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2 shrink-0">
+        <a
+          href={infographic.driveUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center min-h-[44px] font-mono text-xs bg-accent text-surface hover:bg-accent-hover hover:text-surface px-3.5 py-2 rounded-sm no-underline"
+        >
+          Ver en Drive ↗
+        </a>
+        <a
+          href={infographic.src}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center min-h-[44px] font-mono text-xs text-accent hover:text-accent-hover border border-accent-border bg-accent-subtle px-3.5 py-2 rounded-sm no-underline"
+        >
+          Abrir imagen completa ↗
+        </a>
+      </div>
+    </div>
+
+    <div class="min-w-0 bg-canvas border border-border-hairline rounded-sm overflow-hidden p-2">
+      <img
+        src={infographic.src}
+        alt={infographic.alt}
+        width={infographic.width}
+        height={infographic.height}
+        loading="eager"
+        decoding="async"
+        class="w-full h-auto block rounded-sm"
+      />
+    </div>
+
+    <figcaption class="text-xs text-ink-muted leading-relaxed">
+      {infographic.caption}
+    </figcaption>
+  </figure>
+
+  <!-- Micro-Video (Objetivo I.2) -->
+  <figure id="video-u1" class="scroll-mt-6 min-w-0 bg-surface border border-border-hairline rounded-md p-4 md:p-6 space-y-4">
+    <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-border-hairline">
+      <div class="min-w-0">
+        <p class="font-mono text-xs uppercase tracking-wider text-accent font-medium">
+          Objetivo I.2 · Micro Audiovisual
+        </p>
+        <h3 class="text-base md:text-lg font-semibold text-ink-primary mt-0.5">
+          {video.title}
+        </h3>
+      </div>
+
+      <a
+        href={video.driveUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center min-h-[44px] font-mono text-xs bg-accent text-surface hover:bg-accent-hover hover:text-surface px-3.5 py-2 rounded-sm no-underline shrink-0"
+      >
+        Ver video en Drive ↗
+      </a>
+    </div>
+
+    <div class="min-w-0 bg-ink-primary border border-border-hairline rounded-sm overflow-hidden">
+      <video
+        controls
+        preload="metadata"
+        poster={video.poster}
+        playsinline
+        class="w-full aspect-video block"
+      >
+        <source src={video.src} type="video/mp4" />
+        Tu navegador no soporta la reproducción HTML5 de video MP4. Puedes{' '}
+        <a href={video.driveUrl} target="_blank" rel="noopener noreferrer" class="underline text-surface">
+          abrir el video en Google Drive
+        </a>.
+      </video>
+    </div>
+
+    <figcaption class="text-xs text-ink-muted leading-relaxed">
+      {video.caption}
+    </figcaption>
+
+    <details class="bg-surface-subtle border border-border-hairline rounded-sm p-3 text-xs">
+      <summary class="cursor-pointer font-mono font-medium text-ink-primary py-1">
+        ¿Prefieres reproducirlo desde Google Drive? Abrir reproductor embebido de Drive
+      </summary>
+      <div class="mt-3 aspect-video w-full overflow-hidden rounded-sm border border-border-hairline bg-canvas">
+        <iframe
+          src={video.previewUrl}
+          title={video.title}
+          loading="lazy"
+          allow="autoplay; fullscreen"
+          class="w-full h-full border-0"
+        ></iframe>
+      </div>
+    </details>
+  </figure>
+</section>

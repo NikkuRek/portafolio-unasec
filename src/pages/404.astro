@@ -1,0 +1,38 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Badge from '../components/ui/Badge.astro';
+import Card from '../components/ui/Card.astro';
+import { AUTHOR_PROFILE } from '../data/portfolio';
+---
+
+<BaseLayout
+  title="404 — Página no encontrada"
+  description={`Ruta no encontrada en el portafolio académico del ${AUTHOR_PROFILE.course.name} (${AUTHOR_PROFILE.course.code}) — ${AUTHOR_PROFILE.fullName}.`}
+>
+  <section aria-labelledby="error-404-title" class="max-w-[68ch] mx-auto py-8 md:py-14">
+    <Card as="div" class="space-y-6">
+      <div class="space-y-3">
+        <Badge variant="accent" mono>Error 404</Badge>
+        <h1 id="error-404-title">Página no encontrada</h1>
+        <p class="text-base text-ink-secondary leading-relaxed">
+          La dirección solicitada no existe o fue retirada de este portafolio académico. Puedes volver a la portada o acceder directamente a cualquiera de las unidades del {AUTHOR_PROFILE.course.name} ({AUTHOR_PROFILE.course.code}).
+        </p>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-3 pt-2 border-t border-border-hairline">
+        <a
+          href="/"
+          class="inline-flex items-center justify-center min-h-[44px] px-4 py-2.5 text-sm font-medium bg-accent text-surface rounded-md no-underline hover:bg-accent-hover hover:text-surface"
+        >
+          ← Volver al inicio
+        </a>
+        <a
+          href="/unidades"
+          class="inline-flex items-center justify-center min-h-[44px] px-4 py-2.5 text-sm font-medium bg-surface text-ink-primary border border-border-strong rounded-md no-underline hover:bg-surface-subtle"
+        >
+          Ver Unidades I–V
+        </a>
+      </div>
+    </Card>
+  </section>
+</BaseLayout>

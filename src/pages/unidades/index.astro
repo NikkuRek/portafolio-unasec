@@ -1,0 +1,240 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/layout/Breadcrumb.astro';
+import Badge from '../../components/ui/Badge.astro';
+import UnitCard from '../../components/portfolio/UnitCard.astro';
+import {
+  AUTHOR_PROFILE,
+  DELIVERABLE_KIND_LABELS,
+  DRIVE_RESOURCES,
+  PORTFOLIO_DELIVERY,
+  SUGGESTED_BOOK_ACTIVITIES,
+  VERIFIED_REFERENCES,
+} from '../../data/portfolio';
+
+const allUnits = await getCollection('units');
+const sortedUnits = [...allUnits].sort((a, b) => a.data.order - b.data.order);
+
+const allInstruments = await getCollection('instruments');
+const sortedInstruments = [...allInstruments].sort(
+  (a, b) => a.data.instrumentNumber - b.data.instrumentNumber,
+);
+---
+
+<BaseLayout
+  title="Índice de Unidades I–V — Curso Introductorio (Cód. 000)"
+  description="Índice estructurado de las Unidades I, II, III, IV y V del Curso Introductorio (Cód. 000, Lapso 2026-2) de la Universidad Nacional Abierta."
+>
+  <Breadcrumb
+    items={[
+      { label: 'Inicio', href: '/' },
+      { label: 'Unidades I–V (Cód. 000)' },
+    ]}
+  />
+
+  <div class="space-y-12">
+    <header class="space-y-4 max-w-[68ch]">
+      <h1>
+        Unidades del {AUTHOR_PROFILE.course.name} (Unidades I a V)
+      </h1>
+
+      <p class="text-base text-ink-secondary leading-relaxed">
+        Registro sistemático de los productos académicos desarrollados para el <strong>{PORTFOLIO_DELIVERY.milestone}</strong> en el <strong>{AUTHOR_PROFILE.university.localCenter} ({AUTHOR_PROFILE.university.city})</strong>. Cada unidad incluye su objetivo curricular, entregable específico y referencias documentales.
+      </p>
+    </header>
+
+    <!-- Matriz Síntesis de Entregables -->
+    <section aria-labelledby="matriz-title" class="min-w-0 space-y-4">
+      <h2 id="matriz-title" class="text-lg font-semibold">
+        Matriz de Control Curricular ({PORTFOLIO_DELIVERY.week})
+      </h2>
+
+      <div class="min-w-0 overflow-x-auto bg-surface border border-border-hairline rounded-md">
+        <table class="w-full text-left border-collapse text-sm">
+          <thead>
+            <tr class="bg-surface-subtle border-b border-border-hairline">
+              <th class="py-3 px-4 font-mono text-xs font-semibold text-ink-primary">Unidad</th>
+              <th class="py-3 px-4 font-semibold text-ink-primary">Título Temático</th>
+              <th class="py-3 px-4 font-semibold text-ink-primary">Tipo de Entregable</th>
+              <th class="py-3 px-4 font-mono text-xs font-semibold text-ink-primary">Actualización</th>
+              <th class="py-3 px-4 font-mono text-xs font-semibold text-ink-primary">Original</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border-hairline">
+            {sortedUnits.map((unit) => (
+              <tr class="hover:bg-canvas">
+                <td class="py-3 px-4 font-mono text-xs font-semibold text-accent whitespace-nowrap">
+                  <a href={`/unidades/${unit.id}`} class="no-underline hover:underline">
+                    Unidad {unit.data.unitNumber}
+                  </a>
+                </td>
+                <td class="py-3 px-4 font-medium text-ink-primary">
+                  <a href={`/unidades/${unit.id}`} class="text-ink-primary no-underline hover:text-accent">
+                    {unit.data.title}
+                  </a>
+                </td>
+                <td class="py-3 px-4 text-xs text-ink-secondary">
+                  {DELIVERABLE_KIND_LABELS[unit.data.deliverableKind]}
+                </td>
+                <td class="py-3 px-4 font-mono text-xs text-ink-muted whitespace-nowrap">
+                  {unit.data.updatedAt}
+                </td>
+                <td class="py-2 px-4 font-mono text-xs whitespace-nowrap">
+                  {unit.data.driveDocumentUrl ? (
+                    <a
+                      href={unit.data.driveDocumentUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="inline-flex items-center min-h-[44px] text-accent hover:text-accent-hover no-underline hover:underline"
+                    >
+                      Google Docs ↗
+                    </a>
+                  ) : (
+                    <a
+                      href={`/unidades/${unit.id}`}
+                      class="inline-flex items-center min-h-[44px] text-accent hover:text-accent-hover no-underline hover:underline"
+                    >
+                      Infografía + Video
+                    </a>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Tarjetas de Unidades -->
+    <section aria-labelledby="listado-unidades-title" class="space-y-6">
+      <h2 id="listado-unidades-title" class="text-lg font-semibold pb-2 border-b border-border-hairline">
+        Acceso Directo por Unidad
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {sortedUnits.map((unit) => (
+          <UnitCard unit={unit} />
+        ))}
+      </div>
+    </section>
+
+    <!-- Recursos Originales en Google Drive (Carpeta UNASEC y Unidad I) -->
+    <section aria-labelledby="drive-recursos-title" class="space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 pb-2 border-b border-border-hairline">
+        <h2 id="drive-recursos-title" class="text-lg font-semibold">
+          Repositorio Original en Google Drive (UNASEC y Unidad I)
+        </h2>
+        <a
+          href={DRIVE_RESOURCES.folder.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center min-h-[44px] font-mono text-xs text-accent hover:text-accent-hover no-underline hover:underline"
+        >
+          Abrir carpeta completa UNASEC ↗
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {[
+          DRIVE_RESOURCES.unit1Video,
+          DRIVE_RESOURCES.unit1Infographic,
+          DRIVE_RESOURCES.unit2MindMap,
+        ].map((res) => (
+          <a
+            href={res.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="bg-surface border border-border-hairline hover:border-border-strong rounded-md p-4 flex flex-col justify-between gap-2 no-underline min-h-[44px]"
+          >
+            <div class="flex items-center justify-between gap-2">
+              <Badge variant="accent" mono>{res.code}</Badge>
+              <span class="font-mono text-xs text-accent">Drive ↗</span>
+            </div>
+            <h3 class="text-sm font-semibold text-ink-primary">{res.label}</h3>
+            <p class="text-xs text-ink-secondary leading-relaxed">{res.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Desglose rápido de los 5 instrumentos de la Unidad II -->
+    <section aria-labelledby="desglose-instrumentos" class="space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 pb-2 border-b border-border-hairline">
+        <h2 id="desglose-instrumentos" class="text-lg font-semibold">
+          Anexo Estructural: Los 5 Instrumentos de la Unidad II
+        </h2>
+        <a href="/unidades/unidad-2" class="font-mono text-xs text-accent hover:text-accent-hover no-underline hover:underline">
+          Abrir Unidad II completa →
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        {sortedInstruments.map((inst) => (
+          <a
+            href={`/unidades/unidad-2#${inst.data.code.toLowerCase()}`}
+            class="bg-surface border border-border-hairline hover:border-border-strong rounded-md p-4 flex flex-col justify-between gap-3 no-underline"
+          >
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <Badge variant="accent" mono>{inst.data.code}</Badge>
+                <span class="font-mono text-xs text-ink-muted">{inst.data.updatedAt}</span>
+              </div>
+              <h3 class="text-sm font-semibold text-ink-primary leading-snug">
+                {inst.data.title}
+              </h3>
+            </div>
+            <p class="text-xs text-ink-muted">
+              {inst.data.dimension}
+            </p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Actividades Sugeridas del Libro del Curso Introductorio -->
+    <section aria-labelledby="actividades-libro-title" class="space-y-4">
+      <h2 id="actividades-libro-title" class="text-lg font-semibold pb-2 border-b border-border-hairline">
+        Actividades Formativas Sugeridas del Libro UNA (Objetivos I.1 a V.1)
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {SUGGESTED_BOOK_ACTIVITIES.map((act) => (
+          <article class="bg-surface border border-border-hairline rounded-md p-5 space-y-2.5">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <Badge variant="accent" mono>Objetivo {act.objectiveCode}</Badge>
+              <span class="font-mono text-xs text-ink-muted">Unidad {act.unitNumber}</span>
+            </div>
+            <h3 class="text-sm font-semibold text-ink-primary">{act.title}</h3>
+            <p class="text-xs text-ink-secondary leading-relaxed">{act.synthesis}</p>
+            <p class="text-xs text-ink-muted pt-2 border-t border-border-hairline leading-relaxed">
+              <strong class="text-ink-secondary">Articulación con el portafolio:</strong> {act.portfolioRelation}
+            </p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- Referencias Bibliográficas Verificadas -->
+    <section aria-labelledby="referencias-verificadas-title" class="space-y-4">
+      <h2 id="referencias-verificadas-title" class="text-lg font-semibold pb-2 border-b border-border-hairline">
+        Catálogo de Referencias Bibliográficas y Documentales Verificadas
+      </h2>
+
+      <div class="bg-surface border border-border-hairline rounded-md divide-y divide-border-hairline">
+        {VERIFIED_REFERENCES.map((ref) => (
+          <div class="p-4 space-y-1">
+            <div class="flex flex-wrap items-center gap-2">
+              <Badge variant="neutral" mono>
+                {ref.unitNumber === 'General' ? 'General Cód. 000' : `Unidad ${ref.unitNumber}`}
+              </Badge>
+              <span class="font-mono text-xs text-accent">{ref.category}</span>
+            </div>
+            <p class="text-xs font-medium text-ink-primary leading-relaxed">{ref.citation}</p>
+            <p class="text-xs text-ink-muted">{ref.verificationNote}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  </div>
+</BaseLayout>

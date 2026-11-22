@@ -1,0 +1,60 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Badge from '../ui/Badge.astro';
+import Card from '../ui/Card.astro';
+import { DELIVERABLE_KIND_LABELS } from '../../data/portfolio';
+
+interface Props {
+  unit: CollectionEntry<'units'>;
+}
+
+const { unit } = Astro.props;
+const { data } = unit;
+const deliverableLabel = DELIVERABLE_KIND_LABELS[data.deliverableKind];
+---
+
+<Card as="article" class="flex flex-col justify-between gap-5 transition-colors hover:border-border-strong">
+  <div class="space-y-3">
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <div class="flex flex-wrap items-center gap-1.5">
+        <Badge variant="accent" mono>Unidad {data.unitNumber}</Badge>
+        <Badge variant="neutral">{deliverableLabel}</Badge>
+      </div>
+      <span class="font-mono text-xs text-ink-muted">
+        {data.readingMinutes} min · {data.updatedAt}
+      </span>
+    </div>
+
+    <h3 class="text-lg font-semibold leading-snug">
+      <a
+        href={`/unidades/${unit.id}`}
+        class="text-ink-primary no-underline hover:text-accent"
+      >
+        {data.title}
+      </a>
+    </h3>
+
+    <p class="text-sm text-ink-secondary leading-relaxed">
+      {data.subtitle}
+    </p>
+
+    <div class="pt-2 border-t border-border-hairline">
+      <p class="text-xs text-ink-muted leading-relaxed">
+        <strong class="text-ink-secondary font-medium">Objetivo:</strong> {data.objective}
+      </p>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-border-hairline">
+    <span class="font-mono text-xs text-ink-muted">
+      {data.courseCode} · Estado: {data.status}
+    </span>
+    <a
+      href={`/unidades/${unit.id}`}
+      class="inline-flex items-center gap-1 min-h-[44px] px-2 -mr-2 text-sm font-medium text-accent hover:text-accent-hover no-underline hover:underline"
+    >
+      <span>Leer unidad</span>
+      <span aria-hidden="true" class="font-mono">→</span>
+    </a>
+  </div>
+</Card>

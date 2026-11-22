@@ -1,0 +1,24 @@
+---
+interface Props {
+  title?: string | undefined;
+  tone?: 'accent' | 'neutral' | undefined;
+}
+
+const { title, tone = 'accent' } = Astro.props;
+
+const toneClasses =
+  tone === 'accent'
+    ? 'bg-accent-subtle border-accent-border text-ink-primary'
+    : 'bg-surface-subtle border-border-hairline text-ink-primary';
+---
+
+<aside class:list={['border rounded-md p-4 md:p-5', toneClasses]}>
+  {title && (
+    <p class="font-mono text-xs font-medium uppercase tracking-wider text-accent mb-2">
+      {title}
+    </p>
+  )}
+  <div class="text-sm text-ink-secondary leading-relaxed">
+    <slot />
+  </div>
+</aside>

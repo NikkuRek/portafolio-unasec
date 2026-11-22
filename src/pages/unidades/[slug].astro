@@ -1,0 +1,202 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import EditorialLayout from '../../layouts/EditorialLayout.astro';
+import Breadcrumb from '../../components/layout/Breadcrumb.astro';
+import Card from '../../components/ui/Card.astro';
+import MetaRow from '../../components/ui/MetaRow.astro';
+import MindMapFigure from '../../components/portfolio/MindMapFigure.astro';
+import InstrumentList from '../../components/portfolio/InstrumentList.astro';
+import Unit1Media from '../../components/portfolio/Unit1Media.astro';
+import ReferenceList from '../../components/portfolio/ReferenceList.astro';
+import {
+  AUTHOR_PROFILE,
+  DELIVERABLE_KIND_LABELS,
+  DRIVE_RESOURCES,
+} from '../../data/portfolio';
+
+export async function getStaticPaths() {
+  const allUnits = await getCollection('units');
+  const sortedUnits = [...allUnits].sort((a, b) => a.data.order - b.data.order);
+
+  const allInstruments = await getCollection('instruments');
+  const sortedInstruments = [...allInstruments].sort(
+    (a, b) => a.data.instrumentNumber - b.data.instrumentNumber,
+  );
+
+  return sortedUnits.map((unit, index) => {
+    const prevUnit = index > 0 ? sortedUnits[index - 1] : undefined;
+    const nextUnit = index < sortedUnits.length - 1 ? sortedUnits[index + 1] : undefined;
+
+    const unitData = unit.data;
+    const unitInstruments =
+      unitData.deliverableKind === 'instruments-and-mindmap'
+        ? sortedInstruments.filter((inst) => unitData.instruments.includes(inst.id))
+        : [];
+
+    return {
+      params: { slug: unit.id },
+      props: {
+        unit,
+        prevUnit,
+        nextUnit,
+        unitInstruments,
+      },
+    };
+  });
+}
+
+interface Props {
+  unit: CollectionEntry<'units'>;
+  prevUnit: CollectionEntry<'units'> | undefined;
+  nextUnit: CollectionEntry<'units'> | undefined;
+  unitInstruments: readonly CollectionEntry<'instruments'>[];
+}
+
+const { unit, prevUnit, nextUnit, unitInstruments } = Astro.props;
+const { data } = unit;
+const { Content } = await render(unit);
+const deliverableLabel = DELIVERABLE_KIND_LABELS[data.deliverableKind];
+---
+
+<EditorialLayout
+  title={`Unidad ${data.unitNumber}: ${data.title}`}
+  description={data.subtitle}
+>
+  <!-- Sidebar izquierda con metadatos y navegación de unidad -->
+  <div slot="sidebar" class="space-y-4">
+    <Card as="section" class="p-4">
+      <h2 class="font-mono text-xs uppercase tracking-wider text-accent font-semibold mb-2">
+        Ficha de Unidad
+      </h2>
+      <dl>
+        <MetaRow label="Unidad Curricular" value={`Unidad ${data.unitNumber}`} mono />
+        <MetaRow label="Asignatura" value={`${AUTHOR_PROFILE.course.name} (${data.courseCode})`} mono />
+        <MetaRow label="Lapso Académico" value={data.term} mono />
+        <MetaRow label="Entregable" value={deliverableLabel} />
+        <MetaRow label="Tiempo de Lectura" value={`${data.readingMinutes} min aprox.`} mono />
+        <MetaRow label="Última Revisión" value={data.updatedAt} mono />
+        <MetaRow label="Estado" value={data.status.toUpperCase()} mono />
+      </dl>
+    </Card>
+
+    <Card as="section" class="p-4">
+      <h2 class="font-mono text-xs uppercase tracking-wider text-ink-muted font-semibold mb-2">
+        Autor
+      </h2>
+      <p class="text-xs font-medium text-ink-primary">{AUTHOR_PROFILE.fullName}</p>
+      <p class="font-mono text-xs text-ink-muted mt-0.5">
+        {AUTHOR_PROFILE.nationalId} · {AUTHOR_PROFILE.targetProgram.code}
+      </p>
+      <p class="text-xs text-ink-muted mt-1">
+        {AUTHOR_PROFILE.university.localCenter} ({AUTHOR_PROFILE.university.city})
+      </p>
+      <div class="pt-3 mt-3 border-t border-border-hairline">
+        <a
+          href={data.driveDocumentUrl ?? DRIVE_RESOURCES.folder.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center min-h-[44px] font-mono text-xs text-accent hover:text-accent-hover no-underline hover:underline"
+        >
+          {data.driveDocumentUrl ? 'Ver documento original en Drive ↗' : 'Abrir carpeta UNASEC en Drive ↗'}
+        </a>
+      </div>
+    </Card>
+  </div>
+
+  <!-- Columna principal de lectura (68ch) -->
+  <Breadcrumb
+    items={[
+      { label: 'Inicio', href: '/' },
+      { label: 'Unidades I–V', href: '/unidades' },
+      { label: `Unidad ${data.unitNumber}` },
+    ]}
+  />
+
+  <header class="space-y-4 pb-6 border-b border-border-hairline mb-8">
+    <h1>{data.title}</h1>
+
+    <p class="text-base md:text-lg text-ink-secondary leading-relaxed">
+      {data.subtitle}
+    </p>
+
+    <div class="bg-surface-subtle border border-border-hairline rounded-md p-4 text-xs text-ink-secondary leading-relaxed">
+      <strong class="font-mono uppercase text-ink-primary tracking-wide">Objetivo de la Unidad:</strong>{' '}
+      {data.objective}
+    </div>
+  </header>
+
+  <!-- Renderizado específico por unidad -->
+  {data.deliverableKind === 'infographic-and-video' ? (
+    <>
+      <Unit1Media infographic={data.infographic} video={data.video} />
+      <div class="prose-una min-w-0">
+        <Content />
+      </div>
+    </>
+  ) : data.deliverableKind === 'instruments-and-mindmap' ? (
+    <>
+      <InstrumentList instruments={unitInstruments} />
+      <div class="prose-una min-w-0">
+        <Content />
+      </div>
+      <MindMapFigure mindMap={data.mindMap} />
+    </>
+  ) : (
+    <div class="prose-una min-w-0">
+      <Content />
+    </div>
+  )}
+
+  <!-- Referencias bibliográficas -->
+  <ReferenceList references={data.references} />
+
+  <!-- Navegación secuencial entre unidades -->
+  <nav
+    aria-label="Navegación entre unidades"
+    class="mt-12 pt-6 border-t border-border-hairline grid grid-cols-1 sm:grid-cols-2 gap-4 no-print"
+  >
+    {prevUnit ? (
+      <a
+        href={`/unidades/${prevUnit.id}`}
+        class="bg-surface border border-border-hairline hover:border-border-strong rounded-md p-4 no-underline flex flex-col gap-1"
+      >
+        <span class="font-mono text-xs text-ink-muted">← Unidad anterior</span>
+        <span class="text-sm font-semibold text-ink-primary">
+          Unidad {prevUnit.data.unitNumber}: {prevUnit.data.title}
+        </span>
+      </a>
+    ) : (
+      <a
+        href="/unidades"
+        class="bg-surface border border-border-hairline hover:border-border-strong rounded-md p-4 no-underline flex flex-col gap-1"
+      >
+        <span class="font-mono text-xs text-ink-muted">← Volver al índice</span>
+        <span class="text-sm font-semibold text-ink-primary">
+          Todas las unidades ({AUTHOR_PROFILE.course.code})
+        </span>
+      </a>
+    )}
+
+    {nextUnit ? (
+      <a
+        href={`/unidades/${nextUnit.id}`}
+        class="bg-surface border border-border-hairline hover:border-border-strong rounded-md p-4 no-underline flex flex-col gap-1 sm:text-right"
+      >
+        <span class="font-mono text-xs text-ink-muted">Siguiente unidad →</span>
+        <span class="text-sm font-semibold text-ink-primary">
+          Unidad {nextUnit.data.unitNumber}: {nextUnit.data.title}
+        </span>
+      </a>
+    ) : (
+      <a
+        href="/unidades"
+        class="bg-surface border border-border-hairline hover:border-border-strong rounded-md p-4 no-underline flex flex-col gap-1 sm:text-right"
+      >
+        <span class="font-mono text-xs text-ink-muted">Volver al índice →</span>
+        <span class="text-sm font-semibold text-ink-primary">
+          Todas las unidades (I–V)
+        </span>
+      </a>
+    )}
+  </nav>
+</EditorialLayout>

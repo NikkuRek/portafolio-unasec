@@ -1,0 +1,45 @@
+---
+interface ReferenceItem {
+  readonly citation: string;
+  readonly url?: string | undefined;
+  readonly verificationNote?: string | undefined;
+}
+
+interface Props {
+  references: readonly ReferenceItem[];
+  title?: string | undefined;
+}
+
+const { references, title = 'Referencias Bibliográficas y Documentales' } = Astro.props;
+---
+
+{references.length > 0 && (
+  <section aria-labelledby="heading-referencias" class="mt-12 pt-6 border-t border-border-hairline">
+    <h2 id="heading-referencias" class="text-base font-semibold text-ink-primary mb-3">
+      {title}
+    </h2>
+    <ol class="pl-5 space-y-2.5 text-xs text-ink-secondary list-decimal leading-relaxed">
+      {references.map((ref) => (
+        <li class="break-words">
+          <span class="text-ink-primary">{ref.citation}</span>
+          {ref.verificationNote && (
+            <span class="block text-ink-muted mt-0.5">{ref.verificationNote}</span>
+          )}
+          {ref.url && (
+            <>
+              {' '}
+              <a
+                href={ref.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="font-mono text-accent underline"
+              >
+                [Enlace]
+              </a>
+            </>
+          )}
+        </li>
+      ))}
+    </ol>
+  </section>
+)}

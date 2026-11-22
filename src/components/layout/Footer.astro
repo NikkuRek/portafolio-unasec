@@ -1,0 +1,16 @@
+---
+import { AUTHOR_PROFILE } from '../../data/portfolio';
+---
+
+<footer class="border-t border-border-hairline bg-surface mt-16">
+  <div class="max-w-site mx-auto px-4 md:px-8 py-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between text-xs text-ink-muted">
+    <p>
+      {AUTHOR_PROFILE.fullName} (<span class="font-mono">{AUTHOR_PROFILE.nationalId}</span>) — {AUTHOR_PROFILE.university.name} ({AUTHOR_PROFILE.university.localCenter}, {AUTHOR_PROFILE.university.city})
+    </p>
+    <div class="flex flex-wrap items-center gap-3 font-mono">
+      <span>
+        {AUTHOR_PROFILE.course.name} · {AUTHOR_PROFILE.course.code} · {AUTHOR_PROFILE.course.term}
+      </span>
+    </div>
+  </div>
+</footer>

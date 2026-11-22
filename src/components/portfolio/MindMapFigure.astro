@@ -1,0 +1,74 @@
+---
+interface MindMapData {
+  readonly title: string;
+  readonly svgPath: string;
+  readonly driveUrl: string;
+  readonly alt: string;
+  readonly caption: string;
+  readonly accessibleOutline: readonly string[];
+}
+
+interface Props {
+  mindMap: MindMapData;
+}
+
+const { mindMap } = Astro.props;
+---
+
+<figure id="mapa-mental-rasgo-8" class="scroll-mt-6 my-8 min-w-0 bg-surface border border-border-hairline rounded-md p-4 md:p-6 space-y-4">
+  <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-border-hairline">
+    <div class="min-w-0">
+      <p class="font-mono text-xs uppercase tracking-wider text-accent font-medium">
+        Síntesis Gráfica · Mapa Mental
+      </p>
+      <h2 class="text-base md:text-lg font-semibold text-ink-primary mt-0.5">
+        {mindMap.title}
+      </h2>
+    </div>
+    <div class="flex flex-wrap items-center gap-2 shrink-0">
+      <a
+        href={mindMap.driveUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center min-h-[44px] font-mono text-xs bg-accent text-surface hover:bg-accent-hover hover:text-surface px-3.5 py-2 rounded-sm no-underline"
+      >
+        Ver Mapa Mental en Drive ↗
+      </a>
+      <a
+        href={mindMap.svgPath}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center min-h-[44px] font-mono text-xs text-accent hover:text-accent-hover border border-accent-border bg-accent-subtle px-3.5 py-2 rounded-sm no-underline"
+      >
+        Abrir imagen completa ↗
+      </a>
+    </div>
+  </div>
+
+  <div class="min-w-0 bg-canvas border border-border-hairline rounded-sm overflow-hidden p-2">
+    <img
+      src={mindMap.svgPath}
+      alt={mindMap.alt}
+      width="1137"
+      height="736"
+      loading="eager"
+      decoding="async"
+      class="w-full h-auto block rounded-sm"
+    />
+  </div>
+
+  <figcaption class="text-xs text-ink-muted leading-relaxed">
+    {mindMap.caption}
+  </figcaption>
+
+  <details class="bg-surface-subtle border border-border-hairline rounded-sm p-3 text-sm">
+    <summary class="cursor-pointer font-medium text-ink-primary text-xs font-mono py-1 rounded-sm">
+      Ver estructura textual accesible del mapa mental ({mindMap.accessibleOutline.length} nodos)
+    </summary>
+    <ol class="mt-3 pl-5 space-y-1.5 text-xs text-ink-secondary list-decimal leading-relaxed">
+      {mindMap.accessibleOutline.map((node) => (
+        <li>{node}</li>
+      ))}
+    </ol>
+  </details>
+</figure>

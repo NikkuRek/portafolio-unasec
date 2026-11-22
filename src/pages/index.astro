@@ -1,0 +1,197 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Badge from '../components/ui/Badge.astro';
+import Card from '../components/ui/Card.astro';
+import MetaRow from '../components/ui/MetaRow.astro';
+import UnitCard from '../components/portfolio/UnitCard.astro';
+import {
+  AUTHOR_PROFILE,
+  DRIVE_RESOURCES,
+  PORTFOLIO_DELIVERY,
+} from '../data/portfolio';
+
+const allUnits = await getCollection('units');
+const sortedUnits = [...allUnits].sort((a, b) => a.data.order - b.data.order);
+
+const allInstruments = await getCollection('instruments');
+const sortedInstruments = [...allInstruments].sort(
+  (a, b) => a.data.instrumentNumber - b.data.instrumentNumber,
+);
+---
+
+<BaseLayout title="Portafolio Académico — Curso Introductorio (Cód. 000)">
+  <div class="space-y-14">
+    <!-- Hero / Ficha de Identificación Académica -->
+    <section aria-labelledby="hero-title" class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_22rem] gap-8 items-start">
+      <div class="space-y-5 max-w-[68ch]">
+        <h1 id="hero-title">
+          Portafolio Académico del {AUTHOR_PROFILE.course.name}
+        </h1>
+
+        <p class="text-base md:text-lg text-ink-secondary leading-relaxed">
+          Compendio documental del <strong>{AUTHOR_PROFILE.course.name} ({AUTHOR_PROFILE.course.code})</strong> en la <strong>{AUTHOR_PROFILE.university.name} ({AUTHOR_PROFILE.university.localCenter} — {AUTHOR_PROFILE.university.city})</strong>. Articula las Unidades I a V y los cinco instrumentos de autogestión académica de <strong>{AUTHOR_PROFILE.fullName}</strong>, aspirante a {AUTHOR_PROFILE.targetProgram.name}.
+        </p>
+
+        <div class="flex flex-wrap items-center gap-3 pt-2">
+          <a
+            href="/unidades"
+            class="inline-flex items-center justify-center min-h-[44px] px-4 py-2.5 text-sm font-medium bg-accent text-surface rounded-md no-underline hover:bg-accent-hover hover:text-surface"
+          >
+            Explorar Unidades I–V →
+          </a>
+          <a
+            href={DRIVE_RESOURCES.folder.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center justify-center min-h-[44px] px-4 py-2.5 text-sm font-medium bg-accent-subtle text-accent border border-accent-border rounded-md no-underline hover:bg-surface"
+          >
+            Carpeta Drive (UNASEC) ↗
+          </a>
+        </div>
+      </div>
+
+      <!-- Ficha Institucional -->
+      <Card as="section" class="bg-surface">
+        <h2 class="font-mono text-xs uppercase tracking-wider text-accent font-semibold mb-3">
+          Ficha de Identificación UNA
+        </h2>
+        <dl>
+          <MetaRow label="Participante" value={AUTHOR_PROFILE.fullName} />
+          <MetaRow label="Cédula de Identidad" value={AUTHOR_PROFILE.nationalId} mono />
+          <MetaRow label="Carrera Aspirada" value={`${AUTHOR_PROFILE.targetProgram.name} (${AUTHOR_PROFILE.targetProgram.code})`} mono />
+          <MetaRow label="Centro Local" value={`${AUTHOR_PROFILE.university.localCenter} · ${AUTHOR_PROFILE.university.city}`} />
+          <MetaRow label="Asignatura y Lapso" value={`${AUTHOR_PROFILE.course.name} (${AUTHOR_PROFILE.course.code}) · ${AUTHOR_PROFILE.course.term}`} mono />
+          <MetaRow label="Cobertura" value={`${PORTFOLIO_DELIVERY.milestone} (${PORTFOLIO_DELIVERY.week})`} />
+        </dl>
+      </Card>
+    </section>
+
+    <!-- Índice de Unidades I a V -->
+    <section aria-labelledby="unidades-title" class="space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 pb-3 border-b border-border-hairline">
+        <div>
+          <p class="font-mono text-xs uppercase tracking-wider text-accent font-medium">
+            Estructura Curricular · {AUTHOR_PROFILE.course.code}
+          </p>
+          <h2 id="unidades-title" class="mt-1">
+            Unidades Desarrolladas (Unidades I a V)
+          </h2>
+        </div>
+        <a href="/unidades" class="font-mono text-xs text-accent hover:text-accent-hover no-underline hover:underline">
+          Ver matriz completa de unidades →
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {sortedUnits.map((unit) => (
+          <UnitCard unit={unit} />
+        ))}
+      </div>
+
+      <!-- Acceso a Carpeta Principal Drive y Recursos Unidad I -->
+      <Card as="section" class="bg-surface-subtle space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-3 border-b border-border-hairline">
+          <div>
+            <p class="font-mono text-xs uppercase tracking-wider text-accent font-medium">
+              Repositorio Original en Google Drive · Unidad I y Evidencias
+            </p>
+            <h3 class="text-base font-semibold text-ink-primary mt-0.5">
+              Archivo Maestro UNASEC y Recursos Audiovisuales (Unidad I)
+            </h3>
+          </div>
+          <a
+            href={DRIVE_RESOURCES.folder.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center min-h-[44px] font-mono text-xs font-medium text-accent hover:text-accent-hover no-underline hover:underline"
+          >
+            Abrir carpeta UNASEC en Drive ↗
+          </a>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <a
+            href={DRIVE_RESOURCES.unit1Video.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="bg-surface border border-border-hairline hover:border-border-strong rounded-md p-4 no-underline flex flex-col justify-between gap-2 min-h-[44px]"
+          >
+            <div class="flex items-center justify-between gap-2">
+              <Badge variant="accent" mono>{DRIVE_RESOURCES.unit1Video.code}</Badge>
+              <span class="font-mono text-xs text-accent">Drive ↗</span>
+            </div>
+            <p class="text-sm font-semibold text-ink-primary">{DRIVE_RESOURCES.unit1Video.label}</p>
+            <p class="text-xs text-ink-secondary">{DRIVE_RESOURCES.unit1Video.description}</p>
+          </a>
+
+          <a
+            href={DRIVE_RESOURCES.unit1Infographic.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="bg-surface border border-border-hairline hover:border-border-strong rounded-md p-4 no-underline flex flex-col justify-between gap-2 min-h-[44px]"
+          >
+            <div class="flex items-center justify-between gap-2">
+              <Badge variant="accent" mono>{DRIVE_RESOURCES.unit1Infographic.code}</Badge>
+              <span class="font-mono text-xs text-accent">Drive ↗</span>
+            </div>
+            <p class="text-sm font-semibold text-ink-primary">{DRIVE_RESOURCES.unit1Infographic.label}</p>
+            <p class="text-xs text-ink-secondary">{DRIVE_RESOURCES.unit1Infographic.description}</p>
+          </a>
+        </div>
+      </Card>
+    </section>
+
+    <!-- Resumen de los 5 Instrumentos de Autogestión (Unidad II) -->
+    <section aria-labelledby="instrumentos-resumen-title" class="min-w-0 space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 pb-3 border-b border-border-hairline">
+        <div>
+          <p class="font-mono text-xs uppercase tracking-wider text-accent font-medium">
+            Unidad II · Autogestión en Educación a Distancia
+          </p>
+          <h2 id="instrumentos-resumen-title" class="mt-1">
+            Instrumentos de Autoevaluación y Planificación (U2-I1 a U2-I5)
+          </h2>
+        </div>
+        <a href="/unidades/unidad-2#heading-instrumentos" class="inline-flex items-center min-h-[44px] sm:min-h-0 font-mono text-xs text-accent hover:text-accent-hover no-underline hover:underline">
+          Inspeccionar los 5 instrumentos y el mapa mental →
+        </a>
+      </div>
+
+      <div class="min-w-0 overflow-x-auto bg-surface border border-border-hairline rounded-md">
+        <table class="w-full text-left border-collapse text-sm">
+          <thead>
+            <tr class="bg-surface-subtle border-b border-border-hairline">
+              <th class="py-3 px-4 font-mono text-xs font-semibold text-ink-primary">Código</th>
+              <th class="py-3 px-4 font-semibold text-ink-primary">Instrumento</th>
+              <th class="py-3 px-4 font-semibold text-ink-primary">Dimensión Evaluada</th>
+              <th class="py-3 px-4 font-semibold text-ink-primary">Hallazgo Principal</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border-hairline">
+            {sortedInstruments.map((inst) => (
+              <tr class="hover:bg-canvas">
+                <td class="py-3 px-4 font-mono text-xs font-medium text-accent whitespace-nowrap">
+                  <a href={`/unidades/unidad-2#${inst.data.code.toLowerCase()}`} class="no-underline hover:underline">
+                    {inst.data.code}
+                  </a>
+                </td>
+                <td class="py-3 px-4 font-medium text-ink-primary">
+                  <a href={`/unidades/unidad-2#${inst.data.code.toLowerCase()}`} class="text-ink-primary no-underline hover:text-accent">
+                    {inst.data.title}
+                  </a>
+                </td>
+                <td class="py-3 px-4 text-xs text-ink-muted whitespace-nowrap">
+                  {inst.data.dimension}
+                </td>
+                <td class="py-3 px-4 text-xs text-ink-secondary leading-relaxed">
+                  {inst.data.keyFinding}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

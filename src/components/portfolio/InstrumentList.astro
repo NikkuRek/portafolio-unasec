@@ -1,0 +1,78 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import Badge from '../ui/Badge.astro';
+
+interface Props {
+  instruments: readonly CollectionEntry<'instruments'>[];
+}
+
+const { instruments } = Astro.props;
+
+const renderedInstruments = await Promise.all(
+  instruments.map(async (entry) => {
+    const { Content } = await render(entry);
+    return { entry, Content };
+  }),
+);
+---
+
+<section aria-labelledby="heading-instrumentos" class="my-10 min-w-0 space-y-6">
+  <div class="border-b border-border-hairline pb-3 space-y-1">
+    <p class="font-mono text-xs uppercase tracking-wider text-accent font-medium">
+      Evidencias Aplicadas · Unidad II
+    </p>
+    <h2 id="heading-instrumentos" class="text-xl font-semibold text-ink-primary">
+      Instrumentos de Autogestión Académica (U2-I1 a U2-I5)
+    </h2>
+    <p class="text-xs text-ink-muted sm:hidden">
+      En pantallas pequeñas, las tablas detalladas permiten desplazamiento horizontal interno sin deformar la lectura.
+    </p>
+  </div>
+
+  <div class="space-y-6">
+    {renderedInstruments.map(({ entry, Content }) => (
+      <article
+        id={entry.data.code.toLowerCase()}
+        class="scroll-mt-6 min-w-0 bg-surface border border-border-hairline rounded-md p-4 sm:p-5 md:p-6 space-y-4"
+      >
+        <header class="space-y-2 pb-3 border-b border-border-hairline">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex flex-wrap items-center gap-2">
+              <Badge variant="accent" mono>{entry.data.code}</Badge>
+              <Badge variant="neutral">{entry.data.dimension}</Badge>
+            </div>
+            <span class="font-mono text-xs text-ink-muted">
+              Actualizado: {entry.data.updatedAt}
+            </span>
+          </div>
+
+          <h3 class="text-lg font-semibold text-ink-primary">
+            Instrumento {entry.data.instrumentNumber}: {entry.data.title}
+          </h3>
+
+          <p class="text-xs text-ink-muted leading-relaxed">
+            <strong class="text-ink-secondary">Objetivo:</strong> {entry.data.objective}
+          </p>
+        </header>
+
+        <div class="bg-accent-subtle border border-accent-border rounded-sm p-3.5 text-xs text-ink-primary leading-relaxed">
+          <strong class="font-mono text-accent uppercase tracking-wide">Hallazgo clave:</strong>{' '}
+          {entry.data.keyFinding}
+        </div>
+
+        <div class="prose-una min-w-0 pt-1">
+          <Content />
+        </div>
+
+        <div class="pt-2 border-t border-border-hairline flex justify-end no-print">
+          <a
+            href="#heading-instrumentos"
+            class="font-mono text-xs text-ink-muted hover:text-accent no-underline hover:underline py-1"
+          >
+            ↑ Volver al encabezado de instrumentos
+          </a>
+        </div>
+      </article>
+    ))}
+  </div>
+</section>
